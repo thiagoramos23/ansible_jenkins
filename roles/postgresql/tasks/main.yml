@@ -1,0 +1,60 @@
+---
+- name: Install packages
+  apt: name={{ item }}
+  with_items:
+    - libpq-dev
+    - postgresql-9.3
+    - postgresql-contrib
+    - python-pip
+    - python-dev
+
+- name: Configure PostgreSQL - postgresql.conf
+  template: src=postgresql.conf.j2 dest=/etc/postgresql/9.3/main/postgresql.conf
+  notify: restart postgresql
+
+- name: Configure PostgreSQL - pg_hba.conf
+  template: src=pg_hba.conf.j2 dest=/etc/postgresql/9.3/main/pg_hba.conf
+  notify: restart postgresql
+
+
+- name: Install required Python modules
+  pip: name=psycopg2
+
+- name: Create postgresql user
+  postgresql_user: name={{ postgresql_db_user }} role_attr_flags=CREATEDB,SUPERUSER,CREATEROLE
+  sudo_user: postgres
+
+- name: Create Vagrant postgresql user
+  postgresql_user: name=vagrant role_attr_flags=CREATEDB,SUPERUSER,CREATEROLE
+  sudo_user: postgres
+
+- name: Create postgresql database
+  postgresql_db: name={{ postgresql_db_name }} owner={{ postgresql_db_user }}
+  sudo_user: postgres
+
+- name: Make sure the postgis extensions are installed
+  apt: name={{ item }} force=yes
+  with_items:
+    - libgeos-c1
+    - 'postgresql-{{ postgresql_version }}-postgis-{{ postgresql_ext_postgis_version }}'
+  notify: restart postgresql
+
+- name: Create extensions
+  sudo_user: '{{ postgresql_admin_user }}'
+  shell: "psql {{ postgresql_db_name }} -c 'CREATE EXTENSION IF NOT EXISTS {{ item }};'"
+  with_items: postgresql_extensions
+
+- name: Create foodtrack user
+  postgresql_user: name=foodtrack password=foodtrack role_attr_flags=CREATEDB,SUPERUSER,CREATEROLE
+  sudo_user: postgres
+
+- name: Create stant user
+  postgresql_user: name=stant password=stant role_attr_flags=CREATEDB,SUPERUSER,CREATEROLE
+  sudo_user: postgres
+
+- name: Adding DATABASE_USERNAME for Stant to Path
+  lineinfile: dest=/etc/environment line='export DATABASE_USERNAME=stant' insertafter='EOF'  state=present
+
+- name: Adding DATABASE_PASSWORD for Stant to Path
+  lineinfile: dest=/etc/environment line='export DATABASE_PASSWORD=stant' insertafter='EOF'  state=present
+

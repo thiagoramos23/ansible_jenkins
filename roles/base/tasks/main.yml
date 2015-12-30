@@ -1,0 +1,53 @@
+---
+- name: Update apt cache
+  apt: update_cache=yes
+
+- name: fix locales
+  shell: >
+    locale-gen en_US.UTF-8 && dpkg-reconfigure -fnoninteractive locales && update-locale LC_ALL="en_US.UTF-8" LANG="en_US.UTF-8" LANGUAGE="en_US" && touch ~/.locale_ok creates=~/.locale_ok
+
+- name: Install apt dependencies
+  apt: name={{ item }}
+  with_items:
+    - autoconf
+    - bison
+    - build-essential
+    - libssl-dev
+    - libyaml-dev
+    - libreadline6-dev
+    - zlib1g-dev
+    - libncurses5-dev
+    - nodejs
+    - python-pip
+    - python-dev
+    - htop
+    - git
+    - libpq-dev
+    - imagemagick
+    - libmagickwand-dev
+
+- name: Install additional packages
+  apt: name={{ item }}
+  with_items: packages
+  when: packages
+
+- name: Create application group
+  group: name={{ group_name }}
+
+- name: Create application user
+  user: name={{ user_name }} group={{ group_name }} shell=/bin/bash home={{ user_home_path }}
+
+- name: Setup script to read application environment
+  template: src=read_environment.sh.j2 dest=/etc/profile.d/read_environment.sh
+
+- name: Create profile.d directory
+  file: path={{ profile_d_path }} state=directory owner={{ user_name }} group={{ group_name }}
+
+- name: Create ~/.bash_profile which loads all from ~/profile.d
+  template: src=bash_profile.j2 dest={{ user_home_path }}/.bash_profile owner={{ user_name }} group={{ group_name }}
+
+# - name: ensure private key and public one are present
+#   copy: src=~/.ssh/ansible dest=/home/root/.ssh/{{ item }} mode=0600
+#   with_items:
+#     - app_keys/id_dsa.pub
+#     - app_keys/id_dsa

@@ -1,0 +1,14 @@
+---
+- include: rvm.yml
+  when: ruby_install == 'rvm'
+
+- include: rbenv.yml
+  when: ruby_install == 'rbenv'
+
+- include: package.yml
+  when: ruby_install == 'package'
+
+- name: install required gems
+  gem: name={{ item }} state=present user_install=no
+  with_items:
+    - bundler

@@ -1,0 +1,13 @@
+# {{ ansible_managed }}
+
+default: &default
+  adapter: postgresql
+  host: localhost
+  pool: 5
+
+production:
+  <<: *default
+  database: {{ postgresql_db_name }}
+
+  username: {{ postgresql_db_user }}
+  password: {{ postgresql_db_password }}

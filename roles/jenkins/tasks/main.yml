@@ -1,0 +1,18 @@
+---
+- name: Install JDK
+  apt: name={{ item }} update_cache=yes
+  with_items:
+    - openjdk-7-jdk
+
+- name: Wget jenkins key
+  shell: >
+    wget -q -O - https://jenkins-ci.org/debian/jenkins-ci.org.key | sudo apt-key add -
+
+- name: Add debian bynaries to jenkins list
+  shell: >
+    sudo sh -c 'echo deb http://pkg.jenkins-ci.org/debian binary/ > /etc/apt/sources.list.d/jenkins.list'
+
+- name: Install Jenkins
+  apt: name={{ item }} update_cache=yes
+  with_items:
+    - jenkins

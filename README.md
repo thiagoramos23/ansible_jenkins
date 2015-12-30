@@ -1,2 +1,1 @@
-# productionDigitalOcean
-Ansible for configuring digital ocean
+Ansible to provision a Jenkins CI Machine

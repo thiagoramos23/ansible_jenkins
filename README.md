@@ -1,6 +1,6 @@
 # Ansible to Create Jenkins Machine
 
-You'll need to have ansible already installed.
+You'll need to have ansible already installed. And you need to have an ubuntu machine that you have ssh access.
 
 ###Changing Hosts File
 

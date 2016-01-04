@@ -44,17 +44,9 @@
   shell: "psql {{ postgresql_db_name }} -c 'CREATE EXTENSION IF NOT EXISTS {{ item }};'"
   with_items: postgresql_extensions
 
-- name: Create foodtrack user
-  postgresql_user: name=foodtrack password=foodtrack role_attr_flags=CREATEDB,SUPERUSER,CREATEROLE
-  sudo_user: postgres
-
-- name: Create stant user
-  postgresql_user: name=stant password=stant role_attr_flags=CREATEDB,SUPERUSER,CREATEROLE
-  sudo_user: postgres
-
-- name: Adding DATABASE_USERNAME for Stant to Path
-  lineinfile: dest=/etc/environment line='export DATABASE_USERNAME=stant' insertafter='EOF'  state=present
-
-- name: Adding DATABASE_PASSWORD for Stant to Path
-  lineinfile: dest=/etc/environment line='export DATABASE_PASSWORD=stant' insertafter='EOF'  state=present
-
+# - name: Create ANOTHER user
+#   postgresql_user: name=another password=another role_attr_flags=CREATEDB,SUPERUSER,CREATEROLE
+#   sudo_user: postgres
+#
+# - name: Adding DATABASE_USERNAME for ANOTHER USER to Path
+#   lineinfile: dest=/etc/environment line='export DATABASE_USERNAME=another' insertafter='EOF'  state=present

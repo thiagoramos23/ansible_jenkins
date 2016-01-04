@@ -3,7 +3,7 @@
   digital_ocean: >
     state=present
     ssh_key_ids=762065
-    name=osnuvem-production
+    name=jenkins-production
     size_id=62
     region_id=4
     image_id=13089823

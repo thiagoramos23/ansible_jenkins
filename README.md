@@ -13,4 +13,4 @@ You'll need to have ansible already installed. And you need to have an ubuntu ma
 
 ###Run the command:
 
-> ansible-playbook production.yml -i hosts
+> ansible-playbook production.yml -i hosts -l production

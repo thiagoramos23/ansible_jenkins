@@ -1,0 +1,42 @@
+---
+- name: Packages needed to install android sdk
+  apt: name={{ item }} state=installed
+  sudo: yes
+  with_items:
+    - libgl1-mesa-dev:i386
+    - ia32-libs
+
+- name: Create opt directory
+  file: path=/opt state=directory mode=0755
+
+- name: Download Android SDK
+  get_url: url=http://dl.google.com/android/android-sdk_r24.4.1-linux.tgz dest=/opt/{{ android_sdk_folder }} mode=0777
+
+- name: Unpack Android SDK
+  unarchive: src=/opt/{{ android_sdk_folder }} dest=/opt copy=no
+
+- name: Create export file for Android
+  template: src=android.sh.j2 dest=/opt/android.sh owner=root group=root mode=0755
+
+- name: Run exported android.sh file
+  shell: /opt/android.sh
+
+- name: Updating Profile Path
+  raw: source /etc/profile
+
+- name: Write permission to sdkmanager.jar
+  file: path=/opt/{{ android_sdk_folder }}/tools/lib/sdkmanager.jar mode=0777
+
+- name: "Install Android SDKs"
+  shell: "echo \"y\" | /opt/android-sdk-linux/tools/android update sdk -u -a -t {{ item }}"
+  with_items:
+    - "tools"
+    - "platform-tools"
+    - "build-tools-23.0.1"
+    - "build-tools-22.0.1"
+    - "android-23"
+    - "android-22"
+    - "android-21"
+    - "extra"
+  args:
+    executable: "/bin/bash"

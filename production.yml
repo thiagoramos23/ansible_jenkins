@@ -7,7 +7,8 @@
 - hosts: production
   remote_user: root
   roles:
-    - base
-    - postgresql
-    - { role: ruby, tags: ruby, sudo: true }
-    - { role: jenkins, tags: jenkins, sudo: true }
+    # - base
+    # - postgresql
+    # - { role: ruby, tags: ruby, sudo: true }
+    # - { role: jenkins, tags: jenkins, sudo: true }
+    - { role: android, tags: android, sudo: true }
